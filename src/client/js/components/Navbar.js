@@ -55,6 +55,7 @@ class NavBar extends React.Component {
 
       return <span
        className="nav__link--logout"
+       /*(B.1) Assign event handler to Log Out button click*/
        onClick={ () =>{ this._handleLogout() }}
        >
         Log Out
@@ -65,10 +66,12 @@ class NavBar extends React.Component {
     }
   }
 
+/*(B.2) Handle _Log Out_ button click by sending POST to `/auth/logout`, redirect user to `/login` route*/
 _handleLogout(){
   const component = this
   request.post('/auth/logout')
     .then((serverRes)=>{
+      /* NOTE: setAppState was passed as props in App component (see App.js, D.3b)*/
       component.props.setAppState({
         currentUser: {}
       })
@@ -101,6 +104,8 @@ _handleLogout(){
           >
             Shops
         </NavLink>
+
+      {/*(A) Conditionally render _Log In_ + _Sign Up_ NavLinks components.*/}
 
       {this._renderSignupBtn(this.props.appState)}
       {this._renderLoginBtn(this.props.appState)}

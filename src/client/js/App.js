@@ -15,28 +15,28 @@ import Dashboard from './components/Dashboard'
 import Navbar from './components/Navbar.js'
 
 import request from 'superagent'
-// PART 2 - Import components + configure to router
 
+
+// B.1 - Pass react-router information to NavBar component
 const NavBarWithRouter = withRouter(Navbar)
 
 class App extends React.Component {
+  // A.1 - Pass react-router information to NavBar component
   constructor(...args){
     super(...args)
     this.state = {
       currentUser : {}
-      // currentUser : {id: 8, email: 'coolguyme@mail.com'}
     }
   }
 
+  /* D.1 - write method to let us change state of App component from child components */
   _setAppState(stateObj){
     this.setState(stateObj)
   }
 
+  /*E.1 - get current user from /auth/current, set to component state*/
   componentWillMount(){
-    this._getCurrentUser()
-  }
-
-  _getCurrentUser(){
+    /* NOTE `this` keyword loses reference to APP inside superagent's .then() callback function */
     const component = this
     request.get('/auth/current')
       .then((serverRes)=>{
@@ -49,17 +49,24 @@ class App extends React.Component {
 
   render (){
     const appComponent = this
+
+    /* D.2 - bind the _setAppState() method to this (App) component */
     const _setAppStateWithAppContext = this._setAppState.bind(this)
     return <div>
       <NavBarWithRouter
         {...this.props}
-        setAppState={_setAppStateWithAppContext}
+        /* C.1a - pass state as props*/
         appState={this.state}
+
+        /* D.3a - pass binded method as props */
+        setAppState={_setAppStateWithAppContext}
+
       />
       <Switch>
         <Route path='/dashboard' component={(thePropsWithRouterInfo)=>{
           return <Dashboard
                   {...thePropsWithRouterInfo}
+                  /* C.2a - pass state as props*/
                   appState={this.state}
                 />
         }}
@@ -69,6 +76,7 @@ class App extends React.Component {
           component={ (thePropsWithRouterInfo) => {
               return <LoginForm
                 {...thePropsWithRouterInfo}
+                /* D.3b - pass binded method as props */
                 setAppState={ _setAppStateWithAppContext }
                 />
           }}
